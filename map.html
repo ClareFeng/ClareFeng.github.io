@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+ 
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Intro to MapView - Create a 2D map - 4.15</title>
+ 
+   <style type="text/css">
+       html,body
+       {width:100%;
+        height:100%
+           }
+   #div1{
+      background-color:#DECFCF;
+      color:#756477;
+      font-size:xx-large;
+      font-weight:600;
+       }
+    
+     #div2{
+       height: 10%;
+        width: 100%;
+        background-color:#DECFCF;
+         color:#756477;
+       }
+  
+   #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 90%;
+        width: 100%;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.15/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.15/"></script>
+
+    <script>
+        require(["esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Legend",
+      "esri/widgets/ScaleBar"], function (Map, MapView, FeatureLayer, Legend, ScaleBar) {
+          var flayer = new FeatureLayer({ url: "http://www.arcgisonline.cn/server/rest/services/Hosted/%E7%A6%8F%E5%BB%BA%E5%86%9C%E6%9E%97%E5%A4%A7%E5%AD%A6%E4%BA%8B%E4%BB%B6/FeatureServer"
+          });
+          var map = new Map({
+              basemap: "osm",
+              layers: [flayer]
+          });
+
+          var view = new MapView({
+              container: "viewDiv",
+              map: map,
+              zoom: 14,
+              center: [119.236, 26.089] // longitude, latitude
+          });
+
+          var legend = new Legend({
+              view: view,
+              layerInfos: [{
+                  layer: flayer,
+                  title: "农大事件"
+
+              }]
+          });
+          view.ui.add(legend, "bottom-right");
+
+          var scaleBar = new ScaleBar({
+              view: view,
+              style: "ruler",
+              unit: "metric"
+          });
+          // Add widget to the bottom left corner of the view
+          view.ui.add(scaleBar, {
+              position: "bottom-left"
+          });
+
+          function showCoordinates(pt) {
+              var coords = "Lat/Lon " + pt.latitude.toFixed(3) + " " + pt.longitude.toFixed(3) +
+            " | Scale 1:" + Math.round(view.scale * 1) / 1 +
+            " | Zoom " + view.zoom;
+              div2.innerHTML = coords;
+          }
+          view.watch("stationary", function (isStationary) {
+              showCoordinates(view.center);
+          });
+
+          view.on("pointer-move", function (evt) {
+              showCoordinates(view.toMap({ x: evt.x, y: evt.y }));
+          });
+
+
+      });
+    </script>
+     <script>
+       
+        
+      
+     
+     </script>
+  </head>
+  <body>
+    <div id="div1">福建农林大学事件</div>
+    <div id="viewDiv"></div>
+    <div id="div2"></div>
+  </body>
+</html>
